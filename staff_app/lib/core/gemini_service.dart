@@ -1,29 +1,38 @@
-import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Mock service for Gemini API integration with offline fallback.
+/// GeminiService - Now fetches AI-generated summaries from Cloud Functions output in Firestore.
+/// This ensures Gemini is called server-side only.
 class GeminiService {
-  Future<String> generateIncidentReport(String incidentData) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
-    
-    // In a real scenario, this would call Gemini.
-    // Here we simulate an AI-generated timeline based on the offline fallback.
-    return '''
-# AI Incident Report
-**Timestamp:** \${DateTime.now().toIso8601String()}
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-## Summary
-A fire incident was reported on Floor 3, Auxiliary Kitchen. Staff successfully contained the area and evacuated 14 guests.
+  Future<String> generateIncidentReport(String alertId) async {
+    try {
+      // 1. Fetch the most recent resolved incident if alertId is 'mock_data'
+      // Otherwise fetch the specific alert.
+      QuerySnapshot snapshot;
+      if (alertId == 'mock_data') {
+        snapshot = await _firestore
+            .collection('alerts')
+            .where('escalationStatus', isEqualTo: 'RESOLVED')
+            .orderBy('timestamp', descending: true)
+            .limit(1)
+            .get();
+      } else {
+        final doc = await _firestore.collection('alerts').doc(alertId).get();
+        if (doc.exists && doc.data()?['ai_summary_formatted'] != null) {
+          return doc.data()?['ai_summary_formatted'];
+        }
+        return "AI Summary is still being generated or is unavailable for this incident.";
+      }
 
-## Timeline
-- **00:00** - Smoke detector triggered. Alert generated.
-- **00:02** - Staff "Alex Johnson" acknowledged the alert.
-- **00:05** - Security sweep initiated on Floor 3.
-- **00:15** - Floor 3 confirmed fully evacuated.
+      if (snapshot.docs.isNotEmpty) {
+        final data = snapshot.docs.first.data() as Map<String, dynamic>;
+        return data['ai_summary_formatted'] ?? "AI Summary available soon...";
+      }
 
-## AI Insights
-- **Response Time:** Excellent (under 3 minutes to acknowledgment).
-- **Risk Assessment:** High risk managed effectively. Structural damage unlikely but ventilation required.
-''';
+      return "NO_RECENT_INCIDENTS_FOUND_FOR_SUMMARY";
+    } catch (e) {
+      return "ERROR FETCHING AI SUMMARY: $e";
+    }
   }
 }

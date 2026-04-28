@@ -1,52 +1,76 @@
-import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/alert.dart';
 
-/// Mock service for LAN-based pub/sub real-time synchronization.
-/// Replaces Firebase for offline/LAN constraints.
-class LANPubSubService {
-  final _alertsController = StreamController<List<Alert>>.broadcast();
-  List<Alert> _currentAlerts = [Alert.mock()];
+/// Production-safe Firebase service for real-time alerts.
+/// Replaces mock LANPubSubService with Firestore /alerts stream.
+class FirebaseService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  LANPubSubService() {
-    // Simulate incoming alert every 30 seconds
-    Timer.periodic(const Duration(seconds: 30), (timer) {
-      _currentAlerts.add(
-        Alert(
-          id: 'ALT-\${DateTime.now().millisecondsSinceEpoch}',
-          type: EmergencyType.medical,
-          location: 'Pool Area',
-          severity: AlertSeverity.high,
-          timestamp: DateTime.now(),
-          description: 'Guest reported slip and fall.',
-        ),
-      );
-      _alertsController.add(List.from(_currentAlerts));
+  /// Real-time stream from Firestore /alerts collection
+  Stream<List<Alert>> get alertsStream {
+    return _firestore
+        .collection('alerts')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        return Alert(
+          id: doc.id,
+          type: _parseEmergencyType(data['type']),
+          location: data['location'] ?? 'Unknown Location',
+          severity: _parseSeverity(data['severity']),
+          timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          description: data['description'] ?? 'No description available',
+          status: _parseStatus(data['status']),
+        );
+      }).toList();
     });
   }
 
-  Stream<List<Alert>> get alertsStream async* {
-    yield _currentAlerts;
-    yield* _alertsController.stream;
+  /// Update alert status when staff acknowledges alert
+  Future<void> acknowledgeAlert(String id) async {
+    await _firestore.collection('alerts').doc(id).update({
+      'status': 'investigating',
+    });
   }
 
-  void acknowledgeAlert(String id) {
-    final index = _currentAlerts.indexWhere((a) => a.id == id);
-    if (index != -1) {
-      final old = _currentAlerts[index];
-      _currentAlerts[index] = Alert(
-        id: old.id,
-        type: old.type,
-        location: old.location,
-        severity: old.severity,
-        timestamp: old.timestamp,
-        description: old.description,
-        status: AlertStatus.investigating,
-      );
-      _alertsController.add(List.from(_currentAlerts));
+  EmergencyType _parseEmergencyType(String? value) {
+    switch (value?.toLowerCase()) {
+      case 'fire':
+        return EmergencyType.fire;
+      case 'security':
+        return EmergencyType.security;
+      case 'medical':
+      default:
+        return EmergencyType.medical;
     }
   }
-  
-  void dispose() {
-    _alertsController.close();
+
+  AlertSeverity _parseSeverity(String? value) {
+    switch (value?.toLowerCase()) {
+      case 'critical':
+        return AlertSeverity.critical;
+      case 'high':
+        return AlertSeverity.high;
+      case 'medium':
+        return AlertSeverity.medium;
+      case 'low':
+      default:
+        return AlertSeverity.low;
+    }
+  }
+
+  AlertStatus _parseStatus(String? value) {
+    switch (value?.toLowerCase()) {
+      case 'investigating':
+        return AlertStatus.investigating;
+      case 'resolved':
+        return AlertStatus.resolved;
+      case 'new':
+      default:
+        return AlertStatus.newAlert;
+    }
   }
 }

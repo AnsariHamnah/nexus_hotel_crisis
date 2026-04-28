@@ -2,15 +2,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/firebase_service.dart';
 import '../../models/alert.dart';
 
-// Provides the singleton instance of the LANPubSubService
-final lanPubSubProvider = Provider<LANPubSubService>((ref) {
-  final service = LANPubSubService();
-  ref.onDispose(() => service.dispose());
-  return service;
+/// Firebase Service Provider
+/// Replaces old mock LANPubSubService completely
+final firebaseServiceProvider =
+    Provider<FirebaseService>((ref) {
+  return FirebaseService();
 });
 
-// Stream of alerts from the LAN PubSub service
-final alertsStreamProvider = StreamProvider<List<Alert>>((ref) {
-  final service = ref.watch(lanPubSubProvider);
+/// Real-time Firestore Alerts Stream
+/// Source:
+/// FirebaseFirestore.instance.collection('alerts')
+final alertsStreamProvider =
+    StreamProvider<List<Alert>>((ref) {
+  final service = ref.watch(firebaseServiceProvider);
+
   return service.alertsStream;
 });
+
+/// Optional: Single Alert Provider for Detail Screen
+final selectedAlertProvider =
+    StateProvider<Alert?>((ref) => null);
