@@ -1,0 +1,14 @@
+{
+  "name": "nexus-edge-listener",
+  "version": "1.0.0",
+  "description": "Local Firestore listener for NEXUS crisis intelligence",
+  "main": "backend-listener.js",
+  "scripts": {
+    "start": "node backend-listener.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^13.8.0"
+  }
+}

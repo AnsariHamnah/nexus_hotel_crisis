@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "659497241910",
+    "project_id": "nexus-hotel-crisis",
+    "storage_bucket": "nexus-hotel-crisis.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659497241910:android:643a7340c485788514b797",
+        "android_client_info": {
+          "package_name": "com.nexus.crisis.nexus_staff_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBM7mVbqCpI5TwEjufJN2ukCe62xgc4tsQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

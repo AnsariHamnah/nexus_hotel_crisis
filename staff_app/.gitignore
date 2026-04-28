@@ -1,0 +1,71 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains maintainer specific syntax highlighting and
+# formatting, and is generally not useful for other developers.
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+/lib/generated_plugin_registrant.dart
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will automatically create this folder
+/android/app/src/main/gallery/
+/android/captures/
+/android/dev-keystore.jks
+
+# Xcode will automatically create this folder
+/ios/Pods/
+/ios/.symlinks/
+/ios/Runner/GeneratedPluginRegistrant.h
+/ios/Runner/GeneratedPluginRegistrant.m
+
+# macOS will automatically create this folder
+/macos/Pods/
+/macos/.symlinks/
+/macos/Flutter/ephemeral/
+/macos/Runner/GeneratedPluginRegistrant.swift
+
+# Web will automatically create this folder
+/web/
+
+# Windows will automatically create this folder
+/windows/flutter/ephemeral/
+/windows/runner/Runner.res
+/windows/runner/Runner.rc
+/windows/runner/resource.h
+
+# Linux will automatically create this folder
+/linux/flutter/ephemeral/
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
