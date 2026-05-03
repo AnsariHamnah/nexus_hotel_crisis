@@ -28,3 +28,5 @@ NEXUS transforms existing hotel infrastructure into a crisis intelligence networ
 - Node.js
 - MQTT
 - Google Maps Platform
+
+Updated deployment status
