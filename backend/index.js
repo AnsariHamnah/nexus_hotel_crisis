@@ -12,13 +12,17 @@ const PORT = process.env.PORT || 8080;
 try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
         const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
         admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
+            credential: admin.credential.cert(serviceAccount),
+            projectId: process.env.FIREBASE_PROJECT_ID,
         });
     } else {
-        // Fallback for local development if GOOGLE_APPLICATION_CREDENTIALS is set
-        admin.initializeApp();
+        admin.initializeApp({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+        });
     }
+
     console.log("✅ Firebase Admin initialized");
 } catch (error) {
     console.error("❌ Firebase initialization failed:", error.message);
