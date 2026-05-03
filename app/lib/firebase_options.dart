@@ -53,7 +53,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBM7mVbqCpI5TwEjufJN2ukCe62xgc4tsQ',
+    apiKey: 'AIzaSyBPsfyibdsiqZT_HrC-QjPr80WJznaiw74SyBM7mVbqCpI5TwEjufJN2ukCe62xgc4tsQ',
     appId: '1:659497241910:android:643a7340c485788514b797',
     messagingSenderId: '659497241910',
     projectId: 'nexus-hotel-crisis',
